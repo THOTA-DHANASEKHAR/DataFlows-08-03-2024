@@ -1,0 +1,42 @@
+{
+	"name": "wrong mails",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "FilterWrongMails",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "VALIDEMAIL"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as short,",
+				"          Name as string,",
+				"          Email as string,",
+				"          Country as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 split(regexMatch(Email, `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$`)\r",
+				",",
+				"     disjoint: false) ~> VALIDEMAIL@(ValidMail, InValidMail)",
+				"source1 filter(regexMatch(Email, `^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\\.[a-zA-Z]{2,}$`)\r",
+				") ~> filter1"
+			]
+		}
+	}
+}

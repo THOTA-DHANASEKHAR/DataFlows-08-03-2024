@@ -1,0 +1,22 @@
+{
+	"name": "Target",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "dataflowstarger"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": false,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
