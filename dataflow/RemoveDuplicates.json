@@ -41,7 +41,7 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          ID as string,",
+				"          ID as integer,",
 				"          Name as string,",
 				"          DOD as string,",
 				"          {Mobile Number} as string,",
