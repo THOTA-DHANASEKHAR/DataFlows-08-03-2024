@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "scdt2",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,12 +10,45 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "targetscdt2",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "targetscdt2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -27,7 +60,60 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 derive(IsActive = 1) ~> derivedColumn1"
+				"source(output(",
+				"          surrogatekey as integer,",
+				"          id as integer,",
+				"          name as string,",
+				"          salary as integer,",
+				"          flag as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source1 derive(IsActive = 1) ~> derivedColumn1",
+				"select1, source1 lookup(SQL_id == Id,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"source2 select(mapColumn(",
+				"          SQL_surrogatekey = surrogatekey,",
+				"          SQL_id = id,",
+				"          SQL_name = name,",
+				"          SQL_salary = salary,",
+				"          SQL_flag = flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"lookup1 filter(ERROR_FUNCTION('')) ~> filter1",
+				"derivedColumn2 alterRow(updateIf(1==1)) ~> alterRow1",
+				"filter1 select(mapColumn(",
+				"          SQL_surrogatekey,",
+				"          SQL_id,",
+				"          SQL_name,",
+				"          SQL_salary,",
+				"          SQL_flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 derive(SQL_flag = 0) ~> derivedColumn2",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surrogatekey as integer,",
+				"          id as integer,",
+				"          name as string,",
+				"          salary as integer,",
+				"          flag as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}
