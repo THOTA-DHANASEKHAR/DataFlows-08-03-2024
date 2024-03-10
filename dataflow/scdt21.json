@@ -139,7 +139,13 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id = Id,",
+				"          name = Name,",
+				"          salary = Salary,",
+				"          start_date",
+				"     )) ~> sink2"
 			]
 		}
 	}
