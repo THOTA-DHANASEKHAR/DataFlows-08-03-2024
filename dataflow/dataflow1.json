@@ -26,6 +26,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "source_sdt3_limit2",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -48,7 +55,19 @@
 					"name": "join1"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "AlterRow1"
+				},
+				{
+					"name": "alterRow4"
+				},
+				{
+					"name": "select4"
 				}
 			],
 			"scriptLines": [
@@ -64,7 +83,8 @@
 				"          surrogatekey as integer,",
 				"          id as integer,",
 				"          name as string,",
-				"          salary as integer",
+				"          salary as integer,",
+				"          date_time as date",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -79,10 +99,10 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"source1 derive(date_time = currentUTC()+ minutes(330)) ~> derivedColumn1",
-				"derivedColumn2 window(over(csv_Id),",
-				"     desc(CSV_date_time, true),",
+				"select2 window(over(id),",
+				"     desc(date_time, true),",
 				"     Ranking = rowNumber()) ~> window1",
-				"window1 filter(Ranking < 3) ~> filter1",
+				"window1 filter(Ranking > 1) ~> filter1",
 				"join1 split(!isNull(surrogatekey),",
 				"     disjoint: false) ~> split1@(RecordsToDelete, RecordsToInsert)",
 				"select1, source2 join(csv_Id == id,",
@@ -90,8 +110,52 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"split1@RecordsToDelete derive(tds = 1) ~> derivedColumn2",
-				"filter1 sink(allowSchemaDrift: true,",
+				"split1@RecordsToDelete select(mapColumn(",
+				"          surrogatekey,",
+				"          id,",
+				"          name,",
+				"          salary,",
+				"          date_time",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"filter1 select(mapColumn(",
+				"          surrogatekey,",
+				"          id,",
+				"          name,",
+				"          salary,",
+				"          date_time",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 alterRow(deleteIf(1==1)) ~> AlterRow1",
+				"select4 alterRow(insertIf(1==1)) ~> alterRow4",
+				"split1@RecordsToInsert select(mapColumn(",
+				"          csv_Id,",
+				"          CSV_Name,",
+				"          CSV_Salary,",
+				"          CSV_date_time",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"AlterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surrogatekey as integer,",
+				"          id as integer,",
+				"          name as string,",
+				"          salary as integer",
+				"     ),",
+				"     deletable:true,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     keys:['surrogatekey','id','name','salary','date_time'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
+				"alterRow4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          surrogatekey as integer,",
@@ -106,7 +170,13 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id = csv_Id,",
+				"          name = CSV_Name,",
+				"          salary = CSV_Salary,",
+				"          CSV_date_time",
+				"     )) ~> sink2"
 			]
 		}
 	}
