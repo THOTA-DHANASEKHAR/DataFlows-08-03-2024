@@ -36,13 +36,19 @@
 					"name": "derivedColumn1"
 				},
 				{
-					"name": "union1"
-				},
-				{
 					"name": "window1"
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -73,11 +79,29 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"source1 derive(date_time = currentUTC()+ minutes(330)) ~> derivedColumn1",
-				"select1, source2 union(byName: false)~> union1",
-				"union1 window(over(csv_Id),",
+				"select2 window(over(csv_Id),",
 				"     desc(CSV_date_time, true),",
 				"     Ranking = rowNumber()) ~> window1",
 				"window1 filter(Ranking < 3) ~> filter1",
+				"join1 split(!isNull(surrogatekey),",
+				"     disjoint: false) ~> split1@(RecordsToDelete, RecordsToInsert)",
+				"select1, source2 join(csv_Id == id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"split1@RecordsToDelete select(mapColumn(",
+				"          csv_Id,",
+				"          CSV_Name,",
+				"          CSV_Salary,",
+				"          CSV_date_time,",
+				"          surrogatekey,",
+				"          id,",
+				"          name,",
+				"          salary",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
 				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
