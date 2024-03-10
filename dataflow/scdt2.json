@@ -113,7 +113,14 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          surrogatekey = SQL_surrogatekey,",
+				"          id = SQL_id,",
+				"          name = SQL_name,",
+				"          salary = SQL_salary,",
+				"          flag = SQL_flag",
+				"     )) ~> sink1"
 			]
 		}
 	}
