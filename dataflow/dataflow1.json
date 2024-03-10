@@ -12,22 +12,72 @@
 					"name": "source1"
 				},
 				{
+					"dataset": {
+						"referenceName": "source_sdt3_limit2",
+						"type": "DatasetReference"
+					},
 					"name": "source2"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          Id as string,",
+				"          Id as integer,",
 				"          Name as string,",
-				"          Salary as string",
+				"          Salary as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source2"
+				"source(output(",
+				"          surrogatekey as integer,",
+				"          id as integer,",
+				"          name as string,",
+				"          salary as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"derivedColumn1 select(mapColumn(",
+				"          csv_Id = Id,",
+				"          CSV_Name = Name,",
+				"          CSV_Salary = Salary,",
+				"          CSV_date_time = date_time",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1 derive(date_time = currentUTC()+ minutes(330)) ~> derivedColumn1",
+				"select1, source2 union(byName: false)~> union1",
+				"union1 window(over(csv_Id),",
+				"     desc(CSV_date_time, true),",
+				"     Ranking = rowNumber()) ~> window1",
+				"window1 filter(Ranking < 3) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
