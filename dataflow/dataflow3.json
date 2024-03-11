@@ -37,9 +37,6 @@
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
-				},
-				{
 					"name": "lookup1"
 				},
 				{
@@ -56,6 +53,15 @@
 				},
 				{
 					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -79,14 +85,13 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source2",
-				"source1 derive(startdate = currentUTC()+minutes(330)) ~> derivedColumn1",
-				"derivedColumn1, source2 lookup(source1@Id == source2@id,",
+				"source1, source2 lookup(source1@Id == source2@id,",
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
 				"lookup1 split(!isNull(surrogatekey),",
 				"     disjoint: false) ~> split1@(update, insert)",
-				"split1@update select(mapColumn(",
+				"filter1 select(mapColumn(",
 				"          surrogatekey,",
 				"          id = split1@update@id,",
 				"          name = split1@update@name,",
@@ -106,6 +111,18 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
+				"source2 select(mapColumn(",
+				"          SQL_surrogatekey = surrogatekey,",
+				"          SQL_id = id,",
+				"          SQL_name = name,",
+				"          SQL_salary = salary,",
+				"          SQL_start_date = start_date,",
+				"          SQL_end_date = end_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select2 derive(start_date = currentUTC()) ~> derivedColumn3",
+				"split1@update filter(split1@update@Name!=split1@update@name || split1@update@Salary != split1@update@salary) ~> filter1",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -125,7 +142,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"select2 sink(allowSchemaDrift: true,",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          surrogatekey as integer,",
