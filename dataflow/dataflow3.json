@@ -53,6 +53,9 @@
 				},
 				{
 					"name": "alterRow1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -95,6 +98,14 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 derive(end_date = currentUTC()-hours(24)) ~> derivedColumn2",
 				"derivedColumn2 alterRow(insertIf(1==1)) ~> alterRow1",
+				"split1@insert select(mapColumn(",
+				"          Id = split1@insert@Id,",
+				"          Name = split1@insert@Name,",
+				"          Salary = split1@insert@Salary,",
+				"          startdate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -114,7 +125,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"split1@insert sink(allowSchemaDrift: true,",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          surrogatekey as integer,",
@@ -131,7 +142,12 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink2"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id = Id,",
+				"          name = Name,",
+				"          salary = Salary",
+				"     )) ~> sink2"
 			]
 		}
 	}
