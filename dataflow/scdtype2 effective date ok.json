@@ -1,6 +1,7 @@
 {
-	"name": "dataflow3",
+	"name": "scdtype2 effective date ok",
 	"properties": {
+		"description": "create table scdt2_effectivedate(surrogatekey int identity, id int, name varchar(30), salary integer, start_date date, end_date date);\n \nselect * from scdt2_effectivedate;\n\ninsert into scdt2_effectivedate(id, name, salary, start_date) values(1, 'tds', 35000, '2023-02-1');\ninsert into scdt2_effectivedate(id, name, salary, start_date) values(2, 'Srinth', 55000, '2023-02-1');\ninsert into scdt2_effectivedate(id, name, salary, start_date) values(3, 'Alice Johnson', 75000, '2023-02-1');\nSELECT TOP (1000) * FROM [dbo].[scdt2_effectivedate]",
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
