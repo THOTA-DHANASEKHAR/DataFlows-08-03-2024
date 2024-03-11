@@ -146,7 +146,8 @@
 				"     mapColumn(",
 				"          id = Id,",
 				"          name = Name,",
-				"          salary = Salary",
+				"          salary = Salary,",
+				"          start_date = startdate",
 				"     )) ~> sink2"
 			]
 		}
