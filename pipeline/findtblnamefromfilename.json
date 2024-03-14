@@ -1,0 +1,34 @@
+{
+	"name": "findtblnamefromfilename",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "File_Name1",
+					"value": {
+						"value": "@if(contains(variables('File_Name'), 'RBX2660 Activity Topics UBC'), 'Activity Topics',\nif(contains(variables('File_Name'), 'RBX2660 Appeals UBC'), 'Appeals',\nif(contains(variables('File_Name'), 'RBX2660 Benefits Investigations'), 'Benefits Investigations',\nif(contains(variables('File_Name'), 'RBX2660 Claims'), 'Claims',\nif(contains(variables('File_Name'), 'RBX2660 Contacts UBC'), 'Contacts',\nif(contains(variables('File_Name'), 'RBX2660 Copays UBC'), 'Copays',\nif(contains(variables('File_Name'), 'RBX2660 Coverage Details'), 'Coverage Details',\nif(contains(variables('File_Name'), 'RBX2660 Diagnoses UBC'), 'Diagnoses',\nif(contains(variables('File_Name'), 'RBX2660 Email Activity UBC'), 'Email Activity',\nif(contains(variables('File_Name'), 'RBX2660 Fax Activity UBC'), 'Fax Activity',\nif(contains(variables('File_Name'), 'RBX2660 HCP Locations UBC'), 'HCP Locations',\nif(contains(variables('File_Name'), 'RBX2660 HCP Specialties UBC'), 'HCP Specialties',\nif(contains(variables('File_Name'), 'RBX2660 HCP State Licenses UBC'), 'HCP State Licenses',\nif(contains(variables('File_Name'), 'RBX2660 In Network Pharmacies'), 'In Network Pharmacies',\nif(contains(variables('File_Name'), 'RBX2660 Milestone Activity'), 'Milestone Activity',\nif(contains(variables('File_Name'), 'RBX2668 Objective Activity'), 'Objective Activity',\nif(contains(variables('File_Name'), 'RBX2668 PAP Sub Service Cases'), 'PAP Sub Service Cases',\nif(contains(variables('File_Name'), 'RBX2660 Patient Program Assignments'), 'Patient Program Assignments',\nif(contains(variables('File_Name'), 'RBX2660 Pharmacy Orders'), 'Pharmacy Orders',\nif(contains(variables('File_Name'), 'RBX2660 Pharmacy Shipment Details'), 'Pharmacy Shipment Details',\nif(contains(variables('File_Name'), 'RBX2660 Phone Call Activity'), 'Phone Call Activity',\nif(contains(variables('File_Name'), 'RBX2660 Policy Details'), 'Policy Details',\nif(contains(variables('File_Name'), 'RBX2660 PPI Enrollment Info'), 'PPI Enrollment Info',\nif(contains(variables('File_Name'), 'RBX2660 PPI Medical Info'), 'PPI Medical Info',\nif(contains(variables('File_Name'), 'RBX2660 PPI UBC'), 'PPI',\nif(contains(variables('File_Name'), 'RBX2660 Prescriptions UBC'), 'Prescriptions',\nif(contains(variables('File_Name'), 'RBX2660 Prior Authorizations'), 'Prior Authorizations',\nif(contains(variables('File_Name'), 'RBX2660 Reimbursement Cases UBC'), 'Reimbursement Cases',\nif(contains(variables('File_Name'), 'RBX2660 Status UBC'), 'Status',\nif(contains(variables('File_Name'), 'RBX2660 Task Activity UBC'), 'Task Activity',\nif(contains(variables('File_Name'), 'RBX2660 Text Activity UBC'), 'Text Activity',\n'Unknown')))))))))))))))))))))))))))))))",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"File_Name": {
+				"type": "String",
+				"defaultValue": "RBX2660 PPI UBC"
+			},
+			"File_Name1": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
