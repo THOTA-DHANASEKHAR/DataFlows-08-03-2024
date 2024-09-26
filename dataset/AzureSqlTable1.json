@@ -2,7 +2,7 @@
 	"name": "AzureSqlTable1",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureSqlDatabase1",
+			"referenceName": "AzureSqlDatabase",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -38,7 +38,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "scdt2_effectivedate"
+			"table": "userdetails"
 		}
 	}
 }
